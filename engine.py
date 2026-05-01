@@ -1,6 +1,5 @@
 import heapq
 import random
-import const
 
 class Engine:
     def __init__(self):

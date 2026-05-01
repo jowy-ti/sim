@@ -1,6 +1,4 @@
 import sys
-import heapq
-import engine
 
 def generator(env):
     # for i in range(2):

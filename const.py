@@ -1,4 +1,3 @@
-
 ARRIVAL = 0
 DEPARTURE = 1
 FREE = 0
