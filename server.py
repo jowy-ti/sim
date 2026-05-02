@@ -2,8 +2,8 @@ from const import ServerState
 import random
 
 class Server:
-    def __init__(self, name: str, serviceTime: float):
-        self.name: str = name
+    def __init__(self, id: int, serviceTime: float):
+        self.id: int = id
         self.status = ServerState.FREE
         self.serviceTime = serviceTime
 
@@ -12,8 +12,7 @@ class Server:
     
     def start_service(self) -> float:
         self.status = ServerState.BUSY
-        service_duration = random.expovariate(self.serviceTime)
-        return service_duration
+        return random.expovariate(self.serviceTime)
 
     def end_service(self):
         self.status = ServerState.FREE

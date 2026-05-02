@@ -5,14 +5,19 @@ from event import Event
 from const import EventType
 
 class Engine:
-    def __init__(self, arrival_rate: float):
+    def __init__(self, arrival_rate: float, service_time: float, deadline: float):
         self.clock: float = 0
+        self.deadline: float = deadline
         self.fec: list[Event] = []
         self.arrival_rate: float = arrival_rate
-        self.queue = KQueue("M/M/1", arrival_rate-1)
+        self.queue = KQueue("M/M/1", service_time)
 
-    def generator(self, id: int, last_move: float, priority_level: int, type: EventType):
-        event = Event(id, last_move + random.expovariate(self.arrival_rate), priority_level, type)
+        # Statistics
+        self.queue_wait_time: float = 0
+
+    
+    def generator(self, id: int, next_move: float, priority_level: int, type: EventType):
+        event = Event(id, next_move, priority_level, type)
         heapq.heappush(self.fec, event)
 
     def run(self):
@@ -24,24 +29,35 @@ class Engine:
             # Teleport to the next event
             event: Event = heapq.heappop(self.fec)
             self.clock = event.moveTime
+
+            if self.clock > self.deadline: 
+                break
+
+            print(f"clock:{self.clock}")
             
             if event.type == EventType.ARRIVAL:
                 self.process_arrival(event)
-                self.generator(nextId+1, event.moveTime, random.randint(0, 20), EventType.ARRIVAL)
+                nextId += 1
+                self.generator(nextId, self.clock + random.expovariate(self.arrival_rate), random.randint(0, 20), EventType.ARRIVAL)
             elif event.type == EventType.DEPARTURE:
                 self.process_departure()
+
+        self.queue_wait_time = self.queue.get_wait_time()
             
     def process_arrival(self, event: Event): 
         if not self.queue.any_free_server():
             self.queue.enqueue(self.clock, event)
         else:
-            exit_time = self.queue.enter_server()
-            self.generator(event.id, exit_time, event.priority_Level, EventType.DEPARTURE)
+            service_time = self.queue.enter_server()
+            self.generator(event.id, self.clock + service_time, event.priority_Level, EventType.DEPARTURE)
 
     def process_departure(self):
         self.queue.exit_server()
         
         if self.queue.get_length() > 0:
             event = self.queue.dequeue(self.clock)
-            exit_time = self.queue.enter_server()
-            self.generator(event.id, exit_time, event.priority_Level, EventType.DEPARTURE)
+            service_time = self.queue.enter_server()
+            self.generator(event.id, self.clock + service_time, event.priority_Level, EventType.DEPARTURE)
+
+    def get_total_wait_time(self) -> float:
+        return self.queue_wait_time

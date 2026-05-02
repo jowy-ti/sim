@@ -1,11 +1,8 @@
-import sys
+from engine import Engine
     
 if __name__ == "__main__":
+    env = Engine(1/4, 1/2, 1000.)
+    env.run()
+    wait_time = env.get_total_wait_time()
 
-    if len(sys.argv) < 5:
-        print("You have to introduce all the values of a Kendall queue")
-        
-    A = str(sys.argv[1])
-    S = str(sys.argv[2])
-    C = int(sys.argv[3])
-    N = int(sys.argv[4])
+    print(f"total wait time:{wait_time}")

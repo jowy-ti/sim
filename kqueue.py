@@ -6,7 +6,7 @@ class KQueue:
     def __init__(self, name: str, service_time: float):
         self.name: str = name
         self.queue: deque[tuple[float, Event]] = deque()
-        self.server: Server = Server("1", service_time)
+        self.server: Server = Server(0, service_time)
 
         # Statistics
         self.wait_times: list[float] = []
@@ -42,5 +42,5 @@ class KQueue:
     def exit_server(self):
         self.server.end_service()
 
-    # def get_avg_wait(self):
-    #     return sum(self.wait_times) / len(self.wait_times) if self.wait_times else 0
+    def get_wait_time(self) -> float:
+        return sum(self.wait_times)
