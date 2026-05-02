@@ -44,3 +44,6 @@ class KQueue:
 
     def get_wait_time(self) -> float:
         return sum(self.wait_times)
+    
+    def get_avg_wait_time(self) -> float:
+        return sum(self.wait_times) / len(self.wait_times)

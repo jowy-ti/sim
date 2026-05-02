@@ -11,10 +11,6 @@ class Engine:
         self.fec: list[Event] = []
         self.arrival_rate: float = arrival_rate
         self.queue = KQueue("M/M/1", service_time)
-
-        # Statistics
-        self.queue_wait_time: float = 0
-
     
     def generator(self, id: int, next_move: float, priority_level: int, type: EventType):
         event = Event(id, next_move, priority_level, type)
@@ -32,8 +28,6 @@ class Engine:
 
             if self.clock > self.deadline: 
                 break
-
-            print(f"clock:{self.clock}")
             
             if event.type == EventType.ARRIVAL:
                 self.process_arrival(event)
@@ -41,8 +35,6 @@ class Engine:
                 self.generator(nextId, self.clock + random.expovariate(self.arrival_rate), random.randint(0, 20), EventType.ARRIVAL)
             elif event.type == EventType.DEPARTURE:
                 self.process_departure()
-
-        self.queue_wait_time = self.queue.get_wait_time()
             
     def process_arrival(self, event: Event): 
         if not self.queue.any_free_server():
@@ -60,4 +52,7 @@ class Engine:
             self.generator(event.id, self.clock + service_time, event.priority_Level, EventType.DEPARTURE)
 
     def get_total_wait_time(self) -> float:
-        return self.queue_wait_time
+        return self.queue.get_wait_time()
+    
+    def get_avg_wait_time(self) -> float:
+        return self.queue.get_avg_wait_time()
