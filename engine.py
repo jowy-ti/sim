@@ -1,48 +1,47 @@
 import heapq
 import random
-from queue import Queue
+from kqueue import KQueue
 from event import Event
+from const import EventType
 
 class Engine:
-    def __init__(self):
-        self.clock: int = 0
+    def __init__(self, arrival_rate: float):
+        self.clock: float = 0
         self.fec: list[Event] = []
-        
-    def event_list_update(self, event: Event):
-        event_time = self.clock + delay
-        # Tuple: (time, priority, type)
-        heapq.heappush(self.fel, (event_time, event_type))
+        self.arrival_rate: float = arrival_rate
+        self.queue = KQueue("M/M/1", arrival_rate-1)
 
-    def run(self, max_events):
+    def generator(self, id: int, last_move: float, priority_level: int, type: EventType):
+        event = Event(id, last_move + random.expovariate(self.arrival_rate), priority_level, type)
+        heapq.heappush(self.fec, event)
+
+    def run(self):
         # Initial Arrival
-        self.schedule(random.expovariate(LAMBDA), ARRIVAL)
+        nextId = 0
+        self.generator(nextId, 0, 0, EventType.ARRIVAL)
         
-        for _ in range(max_events):
-            if not self.fel: break
+        while self.fec:
+            # Teleport to the next event
+            event: Event = heapq.heappop(self.fec)
+            self.clock = event.moveTime
             
-            # THE ENGINE JUMP: Teleport to the next event
-            self.clock, event_type = heapq.heappop(self.fel)
+            if event.type == EventType.ARRIVAL:
+                self.process_arrival(event)
+                self.generator(nextId+1, event.moveTime, random.randint(0, 20), EventType.ARRIVAL)
+            elif event.type == EventType.DEPARTURE:
+                self.process_departure()
             
-            if event_type == ARRIVAL:
-                self.handle_arrival()
-            elif event_type == DEPARTURE:
-                self.handle_departure()
+    def process_arrival(self, event: Event): 
+        if not self.queue.any_free_server():
+            self.queue.enqueue(self.clock, event)
+        else:
+            exit_time = self.queue.enter_server()
+            self.generator(event.id, exit_time, event.priority_Level, EventType.DEPARTURE)
 
-    def process_arrival(self):
-        print(f"[{self.clock:.2f}] Arrival. Queue: {self.queue}")
-        # Schedule next arrival (Poisson process)
-        self.schedule(random.expovariate(LAMBDA), ARRIVAL)
+    def process_departure(self):
+        self.queue.exit_server()
         
-        if not self.server_busy:
-            self.server_busy = True
-            self.schedule(random.expovariate(MU), DEPARTURE)
-        else:
-            self.queue += 1
-
-    def proces_departure(self):
-        print(f"[{self.clock:.2f}] Departure. Queue: {self.queue}")
-        if self.queue > 0:
-            self.queue -= 1
-            self.schedule(random.expovariate(MU), DEPARTURE)
-        else:
-            self.server_busy = False
+        if self.queue.get_length() > 0:
+            event = self.queue.dequeue(self.clock)
+            exit_time = self.queue.enter_server()
+            self.generator(event.id, exit_time, event.priority_Level, EventType.DEPARTURE)

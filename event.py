@@ -2,9 +2,9 @@ from __future__ import annotations
 from const import EventType
 
 class Event:
-    def __init__(self, id: int, moveTime: int, priorityLevel: int, type: EventType):
+    def __init__(self, id: int, moveTime: float, priorityLevel: int, type: EventType):
         self.id: int = id
-        self.moveTime: int = moveTime
+        self.moveTime: float = moveTime
         self.priority_Level: int = priorityLevel
         self.type: EventType = type
 
