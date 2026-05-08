@@ -1,0 +1,11 @@
+**** EXPERIMENT MyExperiment() ****
+Replication result: 0
+Replication result: 0
+Replication result: 0
+Replication result: 0
+Replication result: 0
+Replication result: 0
+Replication result: 0
+Replication result: 0
+Replication result: 0
+Replication result: 0

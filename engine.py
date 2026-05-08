@@ -5,12 +5,13 @@ from event import Event
 from const import EventType
 
 class Engine:
-    def __init__(self, arrival_rate: float, service_time: float, deadline: float):
+    def __init__(self, arrival_rate: float, arrival_deviation: float, service_time: float, service_deviation: float, deadline: float):
         self.clock: float = 0
         self.deadline: float = deadline
         self.fec: list[Event] = []
         self.arrival_rate: float = arrival_rate
-        self.queue = KQueue("M/M/1", service_time)
+        self.arrival_deviation: float = arrival_deviation
+        self.queue = KQueue("M/M/1", service_time, service_deviation)
     
     def generator(self, id: int, next_move: float, priority_level: int, type: EventType):
         event = Event(id, next_move, priority_level, type)
@@ -32,7 +33,11 @@ class Engine:
             if event.type == EventType.ARRIVAL:
                 self.process_arrival(event)
                 nextId += 1
-                self.generator(nextId, self.clock + random.expovariate(self.arrival_rate), random.randint(0, 20), EventType.ARRIVAL)
+                min = self.arrival_rate - self.arrival_deviation
+                max = self.arrival_rate + self.arrival_deviation
+                next_arrival = random.uniform(min, max)
+                self.generator(nextId, self.clock + next_arrival, random.randint(0, 20), EventType.ARRIVAL)
+                
             elif event.type == EventType.DEPARTURE:
                 self.process_departure()
             

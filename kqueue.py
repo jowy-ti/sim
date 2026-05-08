@@ -3,10 +3,10 @@ from server import Server
 from event import Event
 
 class KQueue:
-    def __init__(self, name: str, service_time: float):
+    def __init__(self, name: str, service_time: float, service_deviation: float):
         self.name: str = name
         self.queue: deque[tuple[float, Event]] = deque()
-        self.server: Server = Server(0, service_time)
+        self.server: Server = Server(0, service_time, service_deviation)
 
         # Statistics
         self.wait_times: list[float] = []
