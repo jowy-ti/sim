@@ -12,6 +12,7 @@ class Engine:
         self.arrival_rate: float = arrival_rate
         self.arrival_deviation: float = arrival_deviation
         self.queue = KQueue("M/M/1", service_time, service_deviation)
+        self.total_arrivals = 0
     
     def generator(self, id: int, next_move: float, priority_level: int, type: EventType):
         event = Event(id, next_move, priority_level, type)
@@ -33,6 +34,7 @@ class Engine:
             if event.type == EventType.ARRIVAL:
                 self.process_arrival(event)
                 nextId += 1
+                self.total_arrivals += 1
                 min = self.arrival_rate - self.arrival_deviation
                 max = self.arrival_rate + self.arrival_deviation
                 next_arrival = random.uniform(min, max)
@@ -60,4 +62,7 @@ class Engine:
         return self.queue.get_wait_time()
     
     def get_avg_wait_time(self) -> float:
-        return self.queue.get_avg_wait_time()
+        return self.queue.get_wait_time() / self.total_arrivals
+    
+    def get_avg_queue_length(self) -> float:
+        return self.queue.get_length_x_duration() / self.deadline
