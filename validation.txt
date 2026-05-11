@@ -1,3 +1,9 @@
 ctrl+s
-commnad -> conduct
-write name of the function -> "MyExperi"
+commnad -> CONDUCT
+write name of the function -> "MyExperiment"()
+
+
+Next steps:
+Generate RNG during the execution of the simulation
+Validate well
+BPMN
