@@ -1,12 +1,13 @@
 from collections import deque
 from server import Server
 from event import Event
+from rng import RNG
 
 class KQueue:
-    def __init__(self, name: str, service_time: float, service_deviation: float):
+    def __init__(self, name: str, service_time: float, service_deviation: float, rng: RNG):
         self.name: str = name
         self.queue: deque[tuple[float, Event]] = deque()
-        self.server: Server = Server(0, service_time, service_deviation)
+        self.server: Server = Server(0, service_time, service_deviation, rng)
 
         # Statistics
         self.wait_times: list[float] = []
