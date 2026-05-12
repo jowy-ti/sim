@@ -12,18 +12,10 @@ if __name__ == "__main__":
         python_results.append((avg_time, avg_queue_length))
         print(f"avg_wait_time:{avg_time:.4f}, avg_queue_length:{avg_queue_length:.5f}")
 
-
-
-
-
-        with open("simulation_results.csv", "w", newline="") as f:
+        with open("python_results.csv", "w", newline="") as f:
             writer = csv.writer(f)
 
             writer.writerow(["avg_wait_time", "avg_queue_length"])
 
             for wait, queue in python_results:
                 writer.writerow([wait, queue])
-
-        
-        with open("OutputFile.TXT", "w", se) as f:
-
