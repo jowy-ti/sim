@@ -1,12 +1,13 @@
 from const import ServerState
 from rng import RNG
+from typing import Any
 
 class Server:
-    def __init__(self, id: int, serviceTime: float, service_deviation: float, rng: RNG):
+    def __init__(self, id: int, attributes: Any, rng: RNG):
         self.id: int = id
         self.status = ServerState.FREE
-        self.serviceTime = serviceTime
-        self.service_deviation = service_deviation
+        self.serviceTime: float = attributes['mean']
+        self.service_deviation: float = attributes['deviation']
         self.rng = rng
 
     def available(self) -> bool:

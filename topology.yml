@@ -1,0 +1,28 @@
+components:
+  Queue1:
+    service_distribution: exponential
+    mean: 9
+    deviation: 2
+
+  Queue2:
+    service_distribution: uniform
+    mean: 8
+    deviation: 4
+
+  Queue3:
+    service_distribution: deterministic
+    mean: 7
+    deviation: 5
+
+topology:
+  Queue0:
+    next: Queue1
+
+  Queue1:
+    next: Queue2
+
+  Queue2:
+    next: Queue3
+
+  Queue3:
+    next: END

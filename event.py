@@ -2,18 +2,14 @@ from __future__ import annotations
 from const import EventType
 
 class Event:
-    def __init__(self, id: int, moveTime: float, priorityLevel: int, type: EventType):
+    def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str):
         self.id: int = id
         self.moveTime: float = moveTime
-        self.priority_Level: int = priorityLevel
         self.type: EventType = type
-
+        self.queue_name: str = queue_name
 
     # Crucial for heapq / sorting
     def __lt__(self, other: Event) -> bool:
-        if self.moveTime == other.moveTime:
-            # Secondary sort by priority level if times are equal
-            return self.priority_Level < other.priority_Level
         return self.moveTime < other.moveTime
     
     def __repr__(self) -> str:
