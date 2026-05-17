@@ -1,18 +1,21 @@
 components:
   Queue1:
     service_distribution: exponential
-    mean: 9
+    mean: 12
     deviation: 2
+    servers: 3
 
   Queue2:
     service_distribution: uniform
     mean: 8
     deviation: 4
+    servers: 2
 
   Queue3:
     service_distribution: deterministic
-    mean: 7
-    deviation: 5
+    mean: 3
+    deviation: 1
+    servers: 1
 
 topology:
   Queue0:

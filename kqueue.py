@@ -8,14 +8,21 @@ class KQueue:
     def __init__(self, name: str, attributes: Any, rng: RNG):
         self.name: str = name
         self.queue: deque[tuple[float, Event]] = deque()
-        self.server: Server = Server(0, attributes, rng)
+        self.servers: list[Server] = self.servers_creation(attributes, rng)
 
         # Statistics
         self.wait_times: list[float] = []
         self.count_history: list[tuple[float, int]] = [] # Tracks (time, current_size)
     
-    def any_free_server(self) -> bool:
-        return self.server.available()
+    def any_free_server(self) -> tuple[bool, int]:
+        cont = 0
+
+        for server in self.servers:
+            if server.available():
+                return True, cont
+            cont += 1
+
+        return False, -1
     
     def get_length(self) -> int:
         return len(self.queue)
@@ -37,12 +44,17 @@ class KQueue:
         self.count_history.append((current_time, len(self.queue)))
 
         return event
-
-    def enter_server(self) -> float:
-        return self.server.start_service()
     
-    def exit_server(self):
-        self.server.end_service()
+    @staticmethod
+    def servers_creation(attributes: Any, rng: RNG) -> list[Server]:
+        num_servers = attributes['servers']
+        return [Server(i, attributes, rng) for i in range(num_servers)]
+
+    def enter_server(self, server_id: int) -> float:
+        return self.servers[server_id].start_service()
+    
+    def exit_server(self, server_id: int):
+        self.servers[server_id].end_service()
 
 
     # Statistics

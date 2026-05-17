@@ -22,14 +22,14 @@ class Engine:
         # Statistic
         self.total_arrivals = 0
 
-    def generator(self, id: int, next_move: float, type: EventType, queue_name: str):
-        event = Event(id, next_move, type, queue_name)
+    def generator(self, id: int, next_move: float, type: EventType, queue_name: str, server_id: int):
+        event = Event(id, next_move, type, queue_name, server_id)
         heapq.heappush(self.fec, event)
 
     def run(self):
         # Initial Arrival
         nextId = 0
-        self.generator(nextId, self.calculate_next_arrival(), EventType.ARRIVAL, self.QUEUE0)
+        self.generator(nextId, self.calculate_next_arrival(), EventType.ARRIVAL, self.QUEUE0, -1)
         
         while self.fec:
             # Teleport to the next event
@@ -37,12 +37,12 @@ class Engine:
             self.clock = event.moveTime
 
             if self.clock > self.deadline: 
-                break
+                break # Should gather statistica information remaining in queues probably, or keep going till queues are empty. Or maybe this is ok
             
             if event.type == EventType.ARRIVAL:
                 self.process_arrival(event)
                 next_arrival = self.calculate_next_arrival()
-                self.generator(nextId, next_arrival, EventType.ARRIVAL, self.QUEUE0)
+                self.generator(nextId, next_arrival, EventType.ARRIVAL, self.QUEUE0, -1)
 
                 nextId += 1
                 self.total_arrivals += 1
@@ -60,13 +60,13 @@ class Engine:
 
     def process_departure(self, event: Event):
         event_queue: KQueue = self.queues[event.queue_name]
-
-        event_queue.exit_server()
+        event_queue.exit_server(event.server_id)
+        server_exited: int = event.server_id
 
         if event_queue.get_length() > 0:
-            event_dequeued = event_queue.dequeue(self.clock)
-            service_time = event_queue.enter_server()
-            self.generator(event_dequeued.id, self.clock + service_time, EventType.DEPARTURE, event_queue.name)
+            event_dequeued: Event = event_queue.dequeue(self.clock)
+            service_time: float = event_queue.enter_server(server_exited)
+            self.generator(event_dequeued.id, self.clock + service_time, EventType.DEPARTURE, event_queue.name, server_exited)
 
         self.route_next_queue(event)
 
@@ -77,12 +77,13 @@ class Engine:
             return
 
         next_queue: KQueue = self.queues[next_queue_name]
+        free, server_id = next_queue.any_free_server()
 
-        if not next_queue.any_free_server():
+        if not free:
             next_queue.enqueue(self.clock, event)
         else:
-            service_time = next_queue.enter_server()
-            self.generator(event.id, self.clock + service_time, EventType.DEPARTURE, next_queue_name)
+            service_time = next_queue.enter_server(server_id)
+            self.generator(event.id, self.clock + service_time, EventType.DEPARTURE, next_queue_name, server_id)
 
     @staticmethod
     def queues_creation(components: Any, rng: RNG) -> Dict[str, KQueue]:

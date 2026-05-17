@@ -14,7 +14,7 @@ if __name__ == "__main__":
     queues = config['components']
     
     for i in range(5):
-        env = Engine(10, 4, 10000, SEED+i, config)
+        env = Engine(5, 2, 100000, SEED+i, config)
         env.run()
         print(f"Replication {i}")
         for queue_name in queues:
@@ -25,7 +25,6 @@ if __name__ == "__main__":
 
         with open("python_results.csv", "w", newline="") as f:
             writer = csv.writer(f)
-
             writer.writerow(["avg_wait_time", "avg_queue_length"])
 
             for wait, queue in python_results:
