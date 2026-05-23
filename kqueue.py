@@ -5,10 +5,10 @@ from rng import RNG
 from typing import Any
 
 class KQueue:
-    def __init__(self, name: str, attributes: Any, rng: RNG):
+    def __init__(self, name: str, attributes: Any, factors: Any, rng: RNG):
         self.name: str = name
         self.queue: deque[tuple[float, Event]] = deque()
-        self.servers: list[Server] = self.servers_creation(attributes, rng)
+        self.servers: list[Server] = self.servers_creation(attributes, factors, rng)
 
         # Statistics
         self.wait_times: list[float] = []
@@ -45,10 +45,13 @@ class KQueue:
 
         return event
     
-    @staticmethod
-    def servers_creation(attributes: Any, rng: RNG) -> list[Server]:
+    def servers_creation(self, attributes: Any, factors: Any, rng: RNG) -> list[Server]:
         num_servers = attributes['servers']
-        return [Server(i, attributes, rng) for i in range(num_servers)]
+        type = int(self.name[-1])
+
+        if type == 1:
+            num_servers = num_servers*factors['peers']
+        return [Server(i, int(self.name[-1]), attributes, factors, rng) for i in range(num_servers)]
 
     def enter_server(self, server_id: int) -> float:
         return self.servers[server_id].start_service()

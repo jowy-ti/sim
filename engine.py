@@ -4,20 +4,20 @@ from event import Event
 from const import EventType
 from rng import RNG
 from typing import Any, Dict
+import math
 
 class Engine:
     QUEUE0: str = 'Queue0'
     END: str = 'END'
 
-    def __init__(self, arrival_rate: float, arrival_deviation: float, deadline: float, seed: int, routing_config: Any):
+    def __init__(self, deadline: float, seed: int, routing_config: Any):
         self.clock: float = 0
         self.deadline: float = deadline
         self.fec: list[Event] = []
-        self.arrival_rate: float = arrival_rate
-        self.arrival_deviation: float = arrival_deviation
+        self.arrival_rate: float = routing_config['factors']['block_arrival_rate']
         self.rng = RNG(seed)
         self.topology: Dict[str, Any] = routing_config['topology']
-        self.queues: Dict[str, KQueue] = self.queues_creation(routing_config['components'], self.rng)
+        self.queues: Dict[str, KQueue] = self.queues_creation(routing_config['components'], routing_config['factors'], self.rng)
 
         # Statistic
         self.total_arrivals = 0
@@ -37,7 +37,7 @@ class Engine:
             self.clock = event.moveTime
 
             if self.clock > self.deadline: 
-                break # Should gather statistica information remaining in queues probably, or keep going till queues are empty. Or maybe this is ok
+                break
             
             if event.type == EventType.ARRIVAL:
                 self.process_arrival(event)
@@ -51,9 +51,7 @@ class Engine:
                 self.process_departure(event)
 
     def calculate_next_arrival(self) -> float:
-        deviation = (2*self.rng.generate_number() - 1) * self.arrival_deviation
-        # print(self.arrival_rate + deviation)
-        return self.clock + self.arrival_rate + deviation
+        return self.clock - self.arrival_rate * math.log(self.rng.generate_number())
 
     def process_arrival(self, event: Event): 
         self.route_next_queue(event)
@@ -86,8 +84,8 @@ class Engine:
             self.generator(event.id, self.clock + service_time, EventType.DEPARTURE, next_queue_name, server_id)
 
     @staticmethod
-    def queues_creation(components: Any, rng: RNG) -> Dict[str, KQueue]:
-        return {name: KQueue(name, attrs, rng) for name, attrs in components.items()}
+    def queues_creation(components: Any, factors: Any, rng: RNG) -> Dict[str, KQueue]:
+        return {name: KQueue(name, attrs, factors, rng) for name, attrs in components.items()}
 
     # Statistics
     

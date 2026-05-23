@@ -4,6 +4,6 @@ write name of the function -> "MyExperiment"()
 
 
 Next steps:
-Generate RNG during the execution of the simulation
-Validate well
+Validate multi-stage with GPSS T-Test
+Implementation of factors in the model
 BPMN

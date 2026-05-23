@@ -1,20 +1,21 @@
+
+factors:
+  block_difficulty: 4 # 0-10
+  peers: 2 # 1-5
+  transactions_to_verify: 3 # 0-10
+  block_arrival_rate: 12
+
 components:
   Queue1:
-    service_distribution: exponential
-    mean: 12
-    deviation: 2
-    servers: 3
+    mean: 10
+    servers: 1
 
   Queue2:
-    service_distribution: uniform
-    mean: 8
-    deviation: 4
-    servers: 2
+    mean: 6
+    servers: 1
 
   Queue3:
-    service_distribution: deterministic
-    mean: 3
-    deviation: 1
+    mean: 7
     servers: 1
 
 topology:
