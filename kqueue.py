@@ -51,6 +51,7 @@ class KQueue:
 
         if type == 1:
             num_servers = num_servers*factors['peers']
+            # print(f"num_servers: {num_servers}")
         return [Server(i, int(self.name[-1]), attributes, factors, rng) for i in range(num_servers)]
 
     def enter_server(self, server_id: int) -> float:
@@ -62,8 +63,8 @@ class KQueue:
 
     # Statistics
 
-    def get_wait_time(self) -> float:
-        return sum(self.wait_times)
+    def get_wait_time(self) -> tuple[float,int]:
+        return sum(self.wait_times), len(self.wait_times)
     
     def get_length_x_duration(self) -> float:
         length_duration: float = 0

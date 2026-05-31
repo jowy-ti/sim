@@ -14,13 +14,10 @@ class Engine:
         self.clock: float = 0
         self.deadline: float = deadline
         self.fec: list[Event] = []
-        self.arrival_rate: float = routing_config['factors']['block_arrival_rate']
+        self.mean_interarrival: float = routing_config['factors']['block_arrival_rate']
         self.rng = RNG(seed)
         self.topology: Dict[str, Any] = routing_config['topology']
         self.queues: Dict[str, KQueue] = self.queues_creation(routing_config['components'], routing_config['factors'], self.rng)
-
-        # Statistic
-        self.total_arrivals = 0
 
     def generator(self, id: int, next_move: float, type: EventType, queue_name: str, server_id: int):
         event = Event(id, next_move, type, queue_name, server_id)
@@ -45,13 +42,14 @@ class Engine:
                 self.generator(nextId, next_arrival, EventType.ARRIVAL, self.QUEUE0, -1)
 
                 nextId += 1
-                self.total_arrivals += 1
                 
             elif event.type == EventType.DEPARTURE:
                 self.process_departure(event)
 
     def calculate_next_arrival(self) -> float:
-        return self.clock - self.arrival_rate * math.log(self.rng.generate_number())
+        next = (self.mean_interarrival * math.log(self.rng.generate_number()))
+        # print(f"next: {next}")
+        return self.clock - next
 
     def process_arrival(self, event: Event): 
         self.route_next_queue(event)
@@ -80,6 +78,7 @@ class Engine:
         if not free:
             next_queue.enqueue(self.clock, event)
         else:
+            next_queue.wait_times.append(0.0)
             service_time = next_queue.enter_server(server_id)
             self.generator(event.id, self.clock + service_time, EventType.DEPARTURE, next_queue_name, server_id)
 
@@ -90,7 +89,8 @@ class Engine:
     # Statistics
     
     def get_avg_wait_time_queue(self, queue: str) -> float:
-        return self.queues[queue].get_wait_time() / self.total_arrivals
+        avg_time, entries = self.queues[queue].get_wait_time()
+        return avg_time / entries
     
     def get_avg_queue_length_queue(self, queue: str) -> float:
         return self.queues[queue].get_length_x_duration() / self.deadline

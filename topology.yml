@@ -1,9 +1,9 @@
 
 factors:
-  block_difficulty: 4 # 0-10
+  block_difficulty: 7 # 0-10
   peers: 2 # 1-5
-  transactions_to_verify: 3 # 0-10
-  block_arrival_rate: 12
+  transactions_to_verify: 6 # 0-10
+  block_arrival_rate: 12 # 10-14
 
 components:
   Queue1:

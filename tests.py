@@ -26,11 +26,23 @@ if __name__ == "__main__":
     # Save to CSV
     df.to_csv('gpss_results.csv', index=False)
 
-    gpss_results = pd.read_csv('gpss_results.csv')
-    python_results = pd.read_csv('python_results.csv')
+    df1 = pd.read_csv('gpss_results.csv') # GPSS
+    df2 = pd.read_csv('python_results.csv') # Python
 
-    ttest_wait_time = stats.ttest_ind(gpss_results[AVG_WAIT], python_results[AVG_WAIT])
-    ttest_queue_length = stats.ttest_ind(gpss_results[AVG_LENGTH], python_results[AVG_LENGTH])
+    groups = [0, 1, 2]
 
-    interpret(ttest_wait_time.pvalue, "ttest")
-    interpret(ttest_queue_length.pvalue, "ttest")
+    print("--- Comparing Groups Between Dataset 1 and Dataset 2 ---")
+    for g in groups:
+        # Filter out the specific metric for the current group
+        avg_wait_df1 = df1[df1['queue'] == g]['avg_wait_time']
+        avg_wait_df2 = df2[df2['queue'] == g]['avg_wait_time']
+
+        avg_length_df1 = df1[df1['queue'] == g]['avg_queue_length']
+        avg_length_df2 = df2[df2['queue'] == g]['avg_queue_length']
+
+        if not avg_wait_df1.empty and not avg_wait_df2.empty:
+            ttest_wait_time = stats.ttest_ind(avg_wait_df1, avg_wait_df2, equal_var=False)
+            ttest_queue_length = stats.ttest_ind(avg_length_df1, avg_length_df2, equal_var=False)
+
+            interpret(ttest_wait_time.pvalue, "ttest")
+            interpret(ttest_queue_length.pvalue, "ttest")

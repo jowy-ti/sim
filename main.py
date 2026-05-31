@@ -5,7 +5,8 @@ from typing import Any, Dict
 
 
 SEED = 30
-DEADLINE = 100000
+DEADLINE = 10000
+REPLICAS = 10
     
 if __name__ == "__main__":
 
@@ -16,7 +17,7 @@ if __name__ == "__main__":
 
     queues: Any = config['components']
     
-    for i in range(5):
+    for i in range(REPLICAS):
         env = Engine(DEADLINE, SEED+i, config)
         env.run()
         print(f"Replication {i}")
@@ -29,7 +30,9 @@ if __name__ == "__main__":
 
         with open("python_results.csv", "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["avg_wait_time", "avg_queue_length"])
+            writer.writerow(["queue", "avg_wait_time", "avg_queue_length"])
+            cont = 0
 
             for wait, queue in python_results:
-                writer.writerow([wait, queue])
+                writer.writerow([cont, wait, queue])
+                cont = (cont + 1) % 3

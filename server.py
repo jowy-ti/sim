@@ -16,7 +16,6 @@ class Server:
     def start_service(self) -> float:
         self.status = ServerState.BUSY
         deviation = (2*self.rng.generate_number() - 1) * self.service_deviation
-        # print(self.serviceTime + deviation)
         return self.service_time + deviation
 
     def end_service(self):
@@ -30,10 +29,12 @@ class Server:
             case 1:
                 service_time += (service_time * (factors['block_difficulty'] / 10))
             case 2:
-                service_time += (service_time * (factors['peers'] / 5))
+                service_time += (service_time * (factors['peers'] / 10))
             case 3:
-                service_time += (service_time * (factors['transactions_to_verify'] / 10))
+                service_time += (service_time * (factors['transactions_to_verify'] / 20))
             case _: pass
+
+        # print(f"Queue{type}, service time: {service_time}")
 
         # match type:
         #     case 1:
