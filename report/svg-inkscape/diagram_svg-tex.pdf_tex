@@ -1,0 +1,80 @@
+%% Creator: Inkscape 1.2.2 (b0a8486541, 2022-12-01), www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'diagram_svg-tex.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{633.75bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.79881657)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{diagram_svg-tex.pdf}}%
+    \put(0.03088757,0.34376156){\color[rgb]{0.13333333,0.14117647,0.16470588}\rotatebox{90}{\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Blockchain actors\end{tabular}}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{diagram_svg-tex.pdf}}%
+    \put(0.06639053,0.10157637){\color[rgb]{0.13333333,0.14117647,0.16470588}\rotatebox{90}{\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}U / U / c\end{tabular}}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{diagram_svg-tex.pdf}}%
+    \put(0.06639053,0.35305566){\color[rgb]{0.13333333,0.14117647,0.16470588}\rotatebox{90}{\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}U / U / c\end{tabular}}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{diagram_svg-tex.pdf}}%
+    \put(0.06639053,0.62445798){\color[rgb]{0.13333333,0.14117647,0.16470588}\rotatebox{90}{\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}M / U / c\end{tabular}}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{diagram_svg-tex.pdf}}%
+    \put(0.29998382,0.69100592){\color[rgb]{0.1254902,0.31372549,0.13333333}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Block mining\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{diagram_svg-tex.pdf}}%
+    \put(0.70157175,0.13147929){\color[rgb]{0.1254902,0.31372549,0.13333333}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Blockverification\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{diagram_svg-tex.pdf}}%
+    \put(0.46723257,0.39514793){\color[rgb]{0.1254902,0.31372549,0.13333333}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Block broadcast\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=8]{diagram_svg-tex.pdf}}%
+    \put(0.82189349,0.2008284){\color[rgb]{0.13333333,0.14117647,0.16470588}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Append the block tothe chain\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=9]{diagram_svg-tex.pdf}}%
+    \put(0.49053254,0.61502959){\color[rgb]{0.13333333,0.14117647,0.16470588}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Instant\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=10]{diagram_svg-tex.pdf}}%
+    \put(0.73905325,0.40201184){\color[rgb]{0.13333333,0.14117647,0.16470588}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Instant\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=11]{diagram_svg-tex.pdf}}%
+    \put(0.06331361,0.75704142){\color[rgb]{0.13333333,0.14117647,0.16470588}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}interarrival rate: 12\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=12]{diagram_svg-tex.pdf}}%
+  \end{picture}%
+\endgroup%

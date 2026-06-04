@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 SEED = 30
 DEADLINE = 10000
-REPLICAS = 10
+REPLICAS = 8
     
 if __name__ == "__main__":
 
@@ -16,17 +16,23 @@ if __name__ == "__main__":
     python_results: list[tuple[float,float]] = []
 
     queues: Any = config['components']
+
+    sum_transactions = 0
     
     for i in range(REPLICAS):
         env = Engine(DEADLINE, SEED+i, config)
         env.run()
-        print(f"Replication {i}")
+
+        total_transactions = env.get_total_transactions_completed()
+        sum_transactions += total_transactions
+
+        print(f"\nReplication {i}\n  total_transactions: {total_transactions}")
         
         for queue_name in queues:
             avg_time = env.get_avg_wait_time_queue(queue_name)
             avg_queue_length = env.get_avg_queue_length_queue(queue_name)
             python_results.append((avg_time, avg_queue_length))
-            print(f"  {queue_name}: avg_wait_time:{avg_time:.4f}, avg_queue_length:{avg_queue_length:.5f}")
+            print(f"  {queue_name}: avg_wait_time: {avg_time:.4f}, avg_queue_length: {avg_queue_length:.5f}")
 
         with open("python_results.csv", "w", newline="") as f:
             writer = csv.writer(f)
@@ -36,3 +42,5 @@ if __name__ == "__main__":
             for wait, queue in python_results:
                 writer.writerow([cont, wait, queue])
                 cont = (cont + 1) % 3
+
+    print(f"\navg_transactions_completed: {sum_transactions/REPLICAS}")

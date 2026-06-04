@@ -31,7 +31,7 @@ class Server:
             case 2:
                 service_time += (service_time * (factors['peers'] / 10))
             case 3:
-                service_time += (service_time * (factors['transactions_to_verify'] / 20))
+                service_time += (service_time * (factors['block_data'] / 20))
             case _: pass
 
         # print(f"Queue{type}, service time: {service_time}")
