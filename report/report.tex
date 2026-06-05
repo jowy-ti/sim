@@ -58,6 +58,44 @@
 	pdftitle={Queue Model Implementation Report}
 }
 
+% Define YAML-friendly colors
+\definecolor{yaml_key}{rgb}{0, 0.4, 0.6}
+\definecolor{yaml_value}{rgb}{0.13, 0.54, 0.13}
+\definecolor{yaml_string}{rgb}{0.64, 0.08, 0.08}
+\definecolor{code_bg}{rgb}{0.97, 0.97, 0.97}
+
+% Create the custom YAML style
+\lstdefinelanguage{yaml}{
+	keywords={true,false,null,y,n},
+	keywordstyle=\color{blue},
+	sensitive=false,
+	comment=[l]{\#},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{gray}\ttfamily,
+	stringstyle=\color{yaml_string}\ttfamily,
+	moredelim=[l][\color{yaml_key}]{\ },
+	moredelim=[l][\color{yaml_key}]{\-},
+	% Simple regex styling emulation for keys (words ending with a colon)
+	moredelim=**[il][\color{yaml_key}{:}\ ]{:},
+}
+
+\lstdefinestyle{yamlStyle}{
+	language=yaml,
+	backgroundcolor=\color{code_bg},
+	basicstyle=\ttfamily\small,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=8pt,
+	numberstyle=\tiny\color{gray},
+	showspaces=false,
+	showstringspaces=false,
+	frame=single,
+	rulecolor=\color{lightgray}
+}
+
 % =============================================================================
 % DOCUMENT DETAILS
 % =============================================================================
@@ -148,7 +186,7 @@
 			Block Difficulty & Task1 & service time & (\ref{eq:service time task1})\\
 			Peers & Task1 \& Task2 & servers \& service time &  (\ref{eq:servers task1}) \& (\ref{eq:service time task2})\\
 			Block Data & Task3 & service time & (\ref{eq:service time task3})\\
-			Block Interarrival Rate & Entry Events & arrival rate & (\ref{eq:arrival rate}) \\
+			Interarrival Rate & Entry Events & arrival rate & (\ref{eq:arrival rate}) \\
 			\bottomrule
 		\end{tabular}
 		\caption{Factors impact in the system.}
@@ -178,7 +216,7 @@
 	\end{equation}
 	
 	\begin{equation}
-		\text{arrival rate}(\lambda) = \frac{1}{\text{Block Interarrival Rate}}
+		\text{arrival rate}(\lambda) = \frac{1}{\text{Interarrival Rate}}
 		\label{eq:arrival rate}
 	\end{equation}\\
 	
@@ -186,22 +224,34 @@
 	\noindent The objective in this simulation is to maximize the throughput of blocks validation, but in this configuration the mining process could be a huge bottleneck if both factors 'Peers' and 'Block Difficulty' are unfavorable. While a higher value of 'Peers' is better for lowering the number of elements in Queue1, it is worse for Queue2, so a problem will be finding a good balance.
 	
 	\subsubsection*{Problem found after simulation}
-	After the execution we found that 'Peers' factor had a significant impact on the block validation throughput, but the positive effect on Queue1 congestion was much important than the negative one to Queue2, so the optimum value of 'Peers' would be higher than the middle one. Also we found that factor 'Block Difficulty' and 'Block Interarrival Rate' had big impact and they are a problem if their value is high, the lower the better.
+	After the execution we found that 'Peers' factor had a significant impact on the block validation throughput, but the positive effect on Queue1 congestion was much important than the negative one to Queue2, so the optimum value of 'Peers' would be above the value in the middle. Also we found that factor 'Block Difficulty' and 'Interarrival Rate' had big impact and they are a problem if their valuea are high, lower is better.
 	
 	\subsection{Hypotheses Framework}
 	To complete the system bounds, the structural behavior, parameters, and limitations are framed under the explicit identifiers listed below:
 	
+	
+	
 	\begin{description}
-		\item[\textbf{SH\_01 (Simplifying Hypothesis):}] Deviation of service times are always a 10\% of the service time
-		\item[\textbf{SH\_02 (Simplifying Hypothesis):}] Transactions don't enter in a queue if the server is free.
-		\item[\textbf{SH\_03 (Simplifying Hypothesis):}] There are not delays in the system.
-		\item[\textbf{SH\_04 (Simplifying Hypothesis):}] All blocks have the same difficulty defined by the 'Block Difficulty' factor.
-		\item[\textbf{SS\_01 (Systemic Structural):}] The queue order is First-In-First-Out ($FIFO$).
-		\item[\textbf{SS\_02 (Systemic Structural):}] The capacity of the system and queues are infinite.
-		\item[\textbf{SD\_01 (Systemic Data):}] Job arrival distributions ($A$) are assumed to follow a exponential distribution.
-		\item[\textbf{SD\_02 (Systemic Data):}] Tasks service times follow a Uniform distribution.
-		\item[\textbf{SD\_03 (Systemic Data):}] All servers associated with a Queue have a determined base service time which would be altered by factors.
-		\item[\textbf{SD\_04 (Systemic Data):}] To calculate the average wait time in a queue we take into account the transactions that didn't enter the queue with zero wait time.
+		\item[\textbf{SI (Simplifying)}]
+		\item[\textbf{ST (Structural)}]
+		\item[\textbf{SY (Systemic)}]
+		\item[\textbf{SI\_01:}] The cryptographic difficulty across all arriving blocks is assumed to be homogeneous and static.
+		\item[\textbf{SI\_02:}] Network transit and message propagation delays between the physical queue stages are negligible ($t = 0$), meaning sequence flow movements are instantaneous.
+		\item[\textbf{SI\_03:}] The blockchain network is modeled as a single, closed linear pipeline; structural complexities such as network splits, malicious nodes, or block forks are omitted.
+		
+		% ==========================================
+		% SYSTEMIC STRUCTURAL HYPOTHESES (SS)
+		% ==========================================
+		\item[\textbf{ST\_01:}] Every individual processing stage maintains a strict, non-preemptive First-In-First-Out ($FIFO$).
+		\item[\textbf{ST\_02:}] The storage capacity ($N$) for all system queues is assumed to be infinite, ensuring that blocks are never dropped due to overflow constraints.
+		\item[\textbf{ST\_03:}] When an arriving block finds an available processing server, it bypasses queue buffering immediately, experiencing a queue waiting time of exactly zero ($W_q = 0$).
+		\item[\textbf{ST\_04:}] The calculation of the global average waiting time explicitly includes immediate-service transactions ($W_q = 0$).
+		
+		% ==========================================
+		% SYSTEMIC DATA / SYNTHETIC PARAMETERS (SD)
+		% ==========================================
+		\item[\textbf{SY\_01:}] The block entry stream behaves as a memoryless Poisson process, where inter-arrival times are drawn from a synthetic continuous exponential distribution ($M$).
+		\item[\textbf{SY\_02:}] Service times are modeled using continuous uniform distributions ($U$), where the explicit boundaries $[a, b]$.
 	\end{description}
 	
 	% =============================================================================
@@ -225,14 +275,120 @@
 	% =============================================================================
 	\section{Coding}
 	\label{sec:coding}
-	The application implementation is developed as an event-driven system written in [C / Python]. The simulator operates chronologically using Event Scheduling mechanics rather than fixed steps. Distinct tracking structures execute changes on:
+	The implementation is a task scheduling simulation engine written in Python. The simulator operates chronologically using Event Scheduling mechanics rather than fixed steps. The queue topology and factors information is provided by a .yaml where it can defined any kind of topology. A definition example can be found in the appendix \ref{app:topology factors}, in order to define the topology always start with a virtual queue 'Queue0' that introduces to the first real queue .The program has the following five classes:
+	
+	\subsubsection*{Engine}
+	
+	
+	Responsibilities of the class:
+	
 	\begin{itemize}
-		\item \texttt{Customer arrival} steps.
-		\item \texttt{Service completion} intervals.
-		\item \texttt{Queue state changes} and data captures.
+		\item Manages the events coming from the future event list, \texttt{self.fec}, the events in the list are ordered by the move time. An event can be either a 'ARRIVAL' or a 'DEPARTURE'.
+		\item Manages the simulated time through a clock \texttt{self.clock} and the deadline of the simulation \texttt{self.deadline}.
+		\item It controls the arrivals given a mean interarrival rate within an exponential distribution.
+		\item Has the routing configuration between queues \texttt{self.topology} and is responsible of attaching events to queues \texttt{self.queues}, in other words it manages the entire event life cycle.
 	\end{itemize}
 	
-	An identical verification model was assembled in GPSS to trace events and cross-verify statistical matching outputs.
+	
+	
+	\begin{lstlisting}[language=Python, caption={Engine constructor}]
+def __init__(self, deadline: float, seed: int, routing_config: Any):
+	self.clock: float = 0
+	self.deadline: float = deadline
+	self.fec: list[Event] = []
+	self.mean_interarrival: float = routing_config['factors']['block_interarrival_rate']
+	self.rng = RNG(seed)
+	self.topology: Dict[str, Any] = routing_config['topology']
+	self.queues: Dict[str, KQueue] = self.queues_creation(routing_config['components'], routing_config['factors'], self.rng)
+	
+	# Statistics
+	self.blocks_validated: int = 0
+	\end{lstlisting}
+	
+	The code in appendix \ref{app:engine loop} shows the loop that controls the life cycle of events. It is self explanatory with comments.
+	
+	\subsubsection*{KQueue}
+
+	The \texttt{KQueue} class encapsulates the behavior of an individual queue within the simulation. Its primary structural components and functional elements are detailed below:
+	
+	\begin{itemize}
+		\item \textbf{\texttt{self.name}:} Each instance maintains a distinct \texttt{name} property used for routing.
+		\item \textbf{\texttt{self.queue}:} Data structure that safely holds arriving entities (blocks) in memory while they wait for resource allocation.
+		\item \textbf{\texttt{self.servers}:} Consists of a collection of homogeneous parallel servers with uniform service times.
+		\item \textbf{\texttt{self.wait\_times} \& \texttt{self.count\_history}:} Used to provide the statistical information used for model validation and to extract the metric we want to measure.
+	\end{itemize}
+	
+	\begin{lstlisting}[language=Python, caption={KQueue constructor}]
+def __init__(self, name: str, attributes: Any, factors: Any, rng: RNG):
+	self.name: str = name
+	self.queue: deque[tuple[float, Event]] = deque()
+	self.servers: list[Server] = self.servers_creation(attributes, factors, rng)
+	
+	# Statistics
+	self.wait_times: list[float] = []
+	self.count_history: list[tuple[float, int]] = [] # Tracks (time, current_size)
+	\end{lstlisting}
+	
+	\subsubsection*{Server}
+	
+	Its only purpose to process the events to do a certain job that lasts as much as the service time indicates. It can only process one event at a time.\\
+	
+	\noindent Relevant elements:
+	
+	\begin{itemize}
+		\item \textbf{\texttt{self.status}.} It is a binary value that can be either free or busy.
+		\item \textbf{\texttt{self.service\_time}.} Indicates the duration of the job.
+	\end{itemize}
+	
+	\begin{lstlisting}[language=Python, caption={Server constructor}]
+def __init__(self, id: int, type: int, attributes: Any, factors: Any, rng: RNG):
+	self.id: int = id
+	self.status = ServerState.FREE
+	self.service_time: float = self.calculate_servicetime(type, attributes, factors)
+	self.service_deviation: float = self.service_time/10
+	self.rng = rng
+	\end{lstlisting}
+	
+	\subsubsection*{Event}
+	
+	This class only contains the necessary information for the engine to handle the events. \\
+	
+	\noindent Relevants elements:
+	
+	\begin{itemize}
+		\item \textbf{\texttt{self.move\_time}.} The time has to be performed the next move.
+		\item \textbf{\texttt{self.type}.} Indicates wether it is an arrival or a departure event.
+		\item \textbf{\texttt{self.queue\_name}.} Indicates the last/actual queue the event was.
+		\item \textbf{\texttt{self.server\_id}.} Indicates the last/actual server the event passed.
+	\end{itemize}
+	
+	\begin{lstlisting}[language=Python, caption={Event constructor}]
+def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, server_id: int):
+	self.id: int = id
+	self.move_time: float = move_time
+	self.type: EventType = type
+	self.queue_name: str = queue_name
+	self.server_id: int = server_id
+	\end{lstlisting}
+	
+	\subsubsection*{RNG}
+	
+	This class uses congruential generator in order to provide the generation of random numbers.
+	
+	\begin{lstlisting}[language=Python, caption={RNG class implementation}]
+	class RNG:
+		# Constants
+		M: int = 2**31
+		A: int = 1103515245
+		C: int = 12345
+		
+		def __init__(self, seed: int):
+			self.seed: int = seed
+		
+		def generate_number(self) -> float:
+			self.seed = (self.A * self.seed + self.C) % self.M
+			return float(self.seed / self.M)
+	\end{lstlisting}	
 	
 	% =============================================================================
 	% 6. DATA CHARACTERISTICS
@@ -247,15 +403,102 @@
 	% =============================================================================
 	\section{Definition of the Experimental Framework}
 	\label{sec:experimental_framework}
-	A structured Design of Experiments (DOE) was formulated to explore the parameter space. The objective functions are formulated to:
+	
+	To optimize experimental efficiency, this study utilizes a $2^{4-1}$ fractional factorial design. This methodology reduces the required experimental overhead by 50\%, requiring only 8 configurations instead of the full 16—while maintaining the statistical power necessary to evaluate main factor effects and two-way interactions. The primary response variable is block validation throughput. To standardize measurements across all experiments and independent replications, each simulation run is bound to a fixed execution window of 10,000 time units. Consequently, the optimization objective is to identify the parameter configurations that maximize the cumulative number of validated blocks within this uniform temporal baseline.\\
+	
+	\noindent The parametrization of two levels for each factor is shown in table \ref{tab:factors values}.
+	
+	
+	
+	\begin{table}[htbp]
+		\centering
+		\begin{tabular}{cccc}
+			\toprule
+			\textbf{A (Block Difficulty)} & \textbf{B (Peers)} & \textbf{C (Block Data)} & \textbf{D (Interarrival Rate)} \\
+			\midrule
+			+8 & +4 & +8 & +13 \\
+			-2 & -1 & -2 & -11 \\
+			\bottomrule
+		\end{tabular}
+		\caption{Two level factors values.}
+		\label{tab:factors values}
+	\end{table}
+	
+	\noindent To determine the number of replications needed we performed a ten pilot replications executions and this were the results:
+	\[ X = \{750, 756, 771, 781, 746, 783, 790, 743, 739, 751\} \]
+	\begin{align}
+		\bar{X} &= 761.0 \\
+		S &= 18.196
+	\end{align}
+	
+	\noindent The initial half-range ($h$) of the 95\% confidence interval is determined by:
 	\begin{equation}
-		\text{Minimize } W_q \quad (\text{Average Wait Time})
-	\end{equation}
-	\begin{equation}
-		\text{Maximize } \rho \quad (\text{Server Resource Utilization})
+		h = t_{\alpha/2, n-1} \cdot \frac{S}{\sqrt{n}} = 2.262 \cdot \frac{18.196}{\sqrt{10}} = 13.016
 	\end{equation}
 	
-	Replications are executed across specific combinations of factors (varied arrival rates $\lambda$ and core capacities $c$) to isolate, check, and interpret second-order variable interactions.
+	\noindent Setting a strict maximum allowable error threshold of 2\% ($\gamma = 0.02$), the desired target half-range ($h^*$) is defined as:
+	\begin{equation}
+		h^* = 0.02 \cdot \bar{X} = 0.02 \cdot 761.0 = 15.220
+	\end{equation}
+	
+	\noindent Applying the structural replication approximation model, the total required sample size ($n^*$) evaluates to:
+	\begin{equation}
+		n^* = n \left( \frac{h}{h^*} \right)^2 = 10 \left( \frac{13.016}{15.220} \right)^2 \approx 7.31
+	\end{equation}
+	
+	\noindent Mathematically is required ($n \approx 8$) replications. In table \ref{tab:factorial_combinations} can be seen the results with its corresponding parametrization
+	
+	\begin{table}[htbp]
+		\centering
+		\begin{tabular}{cccc|c}
+			\toprule
+			\textbf{A} & \textbf{B} & \textbf{C} & \textbf{D} & \textbf{Results} \\
+			\midrule
+			(-2) & (-1) & (-2) & (-11) & 824.625 \\
+			(+8) & (-1) & (-2) & (+13) & 553.875 \\
+			(-2) & (+4) & (-2) & (+13) & 779.625 \\
+			(+8) & (+4) & (-2) & (-11) & 906.750 \\
+			(-2) & (-1) & (+8) & (+13) & 765.000 \\
+			(+8) & (-1) & (+8) & (-11) & 554.250 \\
+			(-2) & (+4) & (+8) & (-11) & 898.125 \\
+			(+8) & (+4) & (+8) & (+13) & 765.000 \\
+			\bottomrule
+		\end{tabular}
+		\caption{Fractional factorial tables with results.}
+		\label{tab:factorial_combinations}
+	\end{table}
+	\FloatBarrier
+	
+	\noindent Once  we obtain the results of the fractional factorial DoE, next we analyze the main effects and interactions by performing the yates algorithm, table \ref{tab:effects}.
+	
+	\begin{table}[htbp]
+		\centering
+		\begin{tabular}{cccccc|l}
+			\toprule
+			\textbf{Results} & \textbf{(1)} & \textbf{(2)} & \textbf{(3)} & \textbf{Div.} & \textbf{Effect ID} & \textbf{Factor/Effect} \\
+			\midrule
+			824.625 & 1,378.500 & 3,064.875 & 6,047.250 & 8 & 755.906 & mean \\
+			553.875 & 1,686.375 & 2,982.375 & -487.500  & 4 & -121.875  &  A \\
+			779.625 & 1,319.250 & -143.625  & 651.750   & 4 & 162.938  &  B \\
+			906.750 & 1,663.125 & -343.875  & 475.500   & 4 & 118.875   & AB \\
+			765.000 & -270.750  & 307.875   & -82.500   & 4 & -20.625   & C \\
+			554.251 & 127.125   & 343.875   & -200.250  & 4 & -50.063  & AC \\
+			898.125 & -210.750  & 397.875   & 36.000    & 4 & 9.000     & BC \\
+			765.000 & -133.125  & 77.625    & -320.250  & 4 & -80.063  & C (ABC) \\
+			\bottomrule
+		\end{tabular}
+		\caption{Experimental results and effects.}
+		\label{tab:effects}
+	\end{table}
+	\FloatBarrier
+	
+	\subsubsection*{Statistical Interpretation of Experimental Effects}
+	
+	Analysis of the fractional factorial design matrix (Table~\ref{tab:effects}) reveals the individual factor main effects and structural two-way interactions governing the block validation pipeline. \\
+	
+	\noindent The grand simulation baseline yields an average throughput of $\bar{X} = 755.906$ validated blocks per execution window. Factor $B$ (\textit{Peers}) exerts the most dominant positive main effect ($+162.938$), empirically demonstrating that expanding peer availability significantly eases processing constraints. Conversely, Factor $A$ (\textit{Block Difficulty}) and Factor $D$ (\textit{Block Interarrival Rate}) present severe negative main effects of $-121.875$ and $-80.063$, respectively. High levels in either parameter cause severe upstream queuing delays that choke cumulative throughput. \\
+	
+	\noindent Crucially, the analysis reveals a massive positive interaction element, $AB$ (\textit{Block Difficulty $\times$ Peers} = $+118.875$). This high-magnitude interaction establishes that the throughput degradation caused by elevated cryptographic difficulty is heavily cushioned and mitigated when the network operates at a high peer capacity. In contrast, the minor significance of Factor $C$ ($-20.625$) and interaction $BC$ ($+9.000$) indicates that block data alterations do not represent a primary operational bottleneck within this specific architecture.
 	
 	% =============================================================================
 	% 8. MODEL VALIDATION
@@ -293,7 +536,7 @@
 		\item \textbf{Block Difficulty:} 7
 		\item \textbf{Peers:} 2
 		\item \textbf{Block Data:} 6
-		\item \textbf{Block Interarrival Rate:} 12
+		\item \textbf{Interarrival Rate:} 12
 	\end{itemize}
 	
 	\noindent Once we run both implementations with eight replicas we compare the metrics between same queues using ttest and we got the following results:
@@ -307,7 +550,7 @@
 		\item \textbf{Queue3 --- avg wait time:} 0.131 p-value
 	\end{itemize}
 	
-	\noindent Since the results of all p-values > 0.05, we fail to reject the hypothesis of similarity. So the simulation engine implemented seems to be adequate for task scheduling.
+	\noindent Since the results of all p-values > 0.05, we fail to reject the hypothesis of similarity. So the simulation engine implemented seems to be adequate for task scheduling. The results can be checked by executing 'python3 main.py' with the same parameters and then 'python3 model\_validation'.
 	% =============================================================================
 	% 9. RESULTS & CONCLUSIONS
 	% =============================================================================
@@ -321,20 +564,70 @@
 	% =============================================================================
 	\appendix
 
-%	\begin{table}[htbp]
-%		\centering
-%		\caption{Mapping conversion legend: BPMN elements to implementation parameters.}
-%		\label{tab:bpmn_mapping}
-%		\begin{tabular}{lll}
-%			\toprule
-%			\textbf{BPMN Element} & \textbf{Simulation Equivalent} & \textbf{Kendall Assignment} \\
-%			\midrule
-%			Start Event & Block Inter-arrival & Parameter $A$ (e.g., $M$) \\
-%			Lane & Queue class & Bound via Capacity $N$ \\
-%			Service Task & Compute Core Processing Activity & Parameter $S$ (e.g., $D$) \\
-%			\bottomrule
-%		\end{tabular}
-%	\end{table}
+	\section{Engine Code}
+	\label{app:engine loop}
+
+	\begin{lstlisting}[language=Python, caption={Loop that manages event life cycle}]
+def run(self):
+	# Initial Arrival
+	nextId = 0
+	self.generator(nextId, self.calculate_next_arrival(), EventType.ARRIVAL, self.QUEUE0, -1)
+	
+	while self.fec:
+		# Teleport to the next event
+		event: Event = heapq.heappop(self.fec)
+		self.clock = event.moveTime
+		
+		if self.clock > self.deadline: 
+			break
+		
+		if event.type == EventType.ARRIVAL:
+			self.process_arrival(event)
+			next_arrival = self.calculate_next_arrival()
+			self.generator(nextId, next_arrival, EventType.ARRIVAL, self.QUEUE0, -1)
+			
+			nextId += 1
+		
+		elif event.type == EventType.DEPARTURE:
+			self.process_departure(event)
+	\end{lstlisting}
+	
+	\section{Topology and factors definition}
+	\label{app:topology factors}
+	
+	\begin{lstlisting}[style=yamlStyle, caption={Simualtion factor and topology definition}, label={lst:yaml config}]
+factors:
+	block_difficulty: 7 # 0-10
+	peers: 2 # 1-5
+	block_data: 6 # 0-10
+	block_interarrival_rate: 12 # 10-14
+	
+components:
+	Queue1:
+		mean: 10
+		servers: 1
+	
+	Queue2:
+		mean: 6
+		servers: 1
+	
+	Queue3:
+		mean: 7
+		servers: 1
+	
+topology:
+	Queue0:
+		next: Queue1
+	
+	Queue1:
+		next: Queue2
+	
+	Queue2:
+		next: Queue3
+	
+	Queue3:
+		next: END		
+	\end{lstlisting}
 %	
 	\section{RNG Validation Engine (R Test Output)}
 	\label{app:rng_validation}

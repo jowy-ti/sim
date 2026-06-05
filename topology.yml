@@ -3,7 +3,7 @@ factors:
   block_difficulty: 7 # 0-10
   peers: 2 # 1-5
   block_data: 6 # 0-10
-  block_interarrival_rate: 12 # 10-14
+  interarrival_rate: 12 # 10-14
 
 components:
   Queue1:

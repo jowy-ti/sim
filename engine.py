@@ -14,13 +14,13 @@ class Engine:
         self.clock: float = 0
         self.deadline: float = deadline
         self.fec: list[Event] = []
-        self.mean_interarrival: float = routing_config['factors']['block_interarrival_rate']
+        self.mean_interarrival: float = routing_config['factors']['interarrival_rate']
         self.rng = RNG(seed)
         self.topology: Dict[str, Any] = routing_config['topology']
         self.queues: Dict[str, KQueue] = self.queues_creation(routing_config['components'], routing_config['factors'], self.rng)
 
         # Statistics
-        self.transactions_completed: int = 0
+        self.blocks_validated: int = 0
 
     def generator(self, id: int, next_move: float, type: EventType, queue_name: str, server_id: int):
         event = Event(id, next_move, type, queue_name, server_id)
@@ -34,7 +34,7 @@ class Engine:
         while self.fec:
             # Teleport to the next event
             event: Event = heapq.heappop(self.fec)
-            self.clock = event.moveTime
+            self.clock = event.move_time
 
             if self.clock > self.deadline: 
                 break
@@ -73,7 +73,7 @@ class Engine:
         next_queue_name: str = self.topology[event.queue_name]['next']
         
         if next_queue_name == self.END:
-            self.transactions_completed += 1
+            self.blocks_validated += 1
             return
 
         next_queue: KQueue = self.queues[next_queue_name]
@@ -100,4 +100,4 @@ class Engine:
         return self.queues[queue].get_length_x_duration() / self.deadline
     
     def get_total_transactions_completed(self) -> int:
-        return self.transactions_completed
+        return self.blocks_validated
