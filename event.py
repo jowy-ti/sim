@@ -3,11 +3,11 @@ from const import EventType
 
 class Event:
     def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, server_id: int):
-        self.id: int = id
-        self.move_time: float = moveTime
-        self.type: EventType = type
-        self.queue_name: str = queue_name
-        self.server_id: int = server_id
+        self.id: int = id                   
+        self.move_time: float = moveTime    
+        self.type: EventType = type         # Event classification (e.g., ARRIVAL, DEPARTURE)
+        self.queue_name: str = queue_name   # actual queue where event takes place
+        self.server_id: int = server_id     # Identifier of the active server handling the process (-1 if none)
 
     # Crucial for heapq / sorting
     def __lt__(self, other: Event) -> bool:

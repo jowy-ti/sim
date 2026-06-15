@@ -8,11 +8,13 @@ class KQueue:
     def __init__(self, name: str, attributes: Any, factors: Any, rng: RNG):
         self.name: str = name
         self.queue: deque[tuple[float, Event]] = deque()
+
+        # Deploy servers
         self.servers: list[Server] = self.servers_creation(attributes, factors, rng)
 
         # Statistics
-        self.wait_times: list[float] = []
-        self.count_history: list[tuple[float, int]] = [] # Tracks (time, current_size)
+        self.wait_times: list[float] = []                   # Stores individual queuing delays (W_q)
+        self.count_history: list[tuple[float, int]] = []    # Tracks state trace steps as (timestamp, queue_size)
     
     def any_free_server(self) -> tuple[bool, int]:
         cont = 0
@@ -34,6 +36,7 @@ class KQueue:
 
     def dequeue(self, current_time: float) -> Event:
         if len(self.queue) == 0:
+            # Output diagnostic stream warning if state boundaries are breached
             print("Error trying to dequeue an empty queue")     
 
         entry_time, event = self.queue.popleft()
@@ -47,8 +50,9 @@ class KQueue:
     
     def servers_creation(self, attributes: Any, factors: Any, rng: RNG) -> list[Server]:
         num_servers = attributes['servers']
-        type = int(self.name[-1])
+        type = int(self.name[-1]) # (e.g., 'Queue1' -> Type 1)
 
+        # Apply Peer Factor scaling factor to stage 1 (Task 1 / Queue 1 mining)
         if type == 1:
             num_servers = num_servers*factors['peers']
             # print(f"num_servers: {num_servers}")

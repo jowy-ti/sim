@@ -17,15 +17,15 @@ def interpret(p_value: float, test_name: str) -> None:
         print("\nVERDICT: THE SEQUENCE APPEARS RANDOM.")
         print(f"Reasoning: The p-value is greater than 0.05, failing to reject the null hypothesis of uniformity.")
 
-    def generate_lcg(n: int, seed: int, m: int, a: int, c: int) -> np.ndarray:
-        rng_values = np.zeros(n)
-        current = seed
+def generate_lcg(n: int, seed: int, m: int, a: int, c: int) -> np.ndarray:
+    rng_values = np.zeros(n)
+    current = seed
 
-        for i in range(n):
-            current = (a * current + c) % m
-            rng_values[i] = float(current / m)
-            
-        return rng_values
+    for i in range(n):
+        current = (a * current + c) % m
+        rng_values[i] = float(current / m)
+        
+    return rng_values
 
 if __name__ == "__main__":
   

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.29)  5 JUN 2026 18:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.10.13)  11 JUN 2026 13:20
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -722,47 +722,48 @@ Underfull \hbox (badness 10000) in paragraph at lines 221--222
 
  []
 
-[2]
-<images/diagram.pdf, id=95, 632.3625pt x 504.38437pt>
+[2] [3]
+<images/diagram.pdf, id=102, 632.3625pt x 504.38437pt>
 File: images/diagram.pdf Graphic file (type pdf)
 <use images/diagram.pdf>
 Package pdftex.def Info: images/diagram.pdf  used on input line 266.
 (pdftex.def)             Requested size: 455.24411pt x 363.11798pt.
- [3] [4 <./images/diagram.pdf>]
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 2
 86.
  (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
+) [4
+
+ <./images/diagram.pdf>]
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
 nput line 294.
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 295.
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 315.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 319.
 
 [5]
-Underfull \hbox (badness 10000) in paragraph at lines 334--335
+Underfull \hbox (badness 10000) in paragraph at lines 338--339
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 354--355
+Underfull \hbox (badness 10000) in paragraph at lines 362--363
 
  []
 
 [6]
-Underfull \hbox (badness 10000) in paragraph at lines 407--408
+Underfull \hbox (badness 10000) in paragraph at lines 415--416
 
  []
 
 [7] [8{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}]
-Underfull \hbox (badness 10000) in paragraph at lines 497--498
+Underfull \hbox (badness 10000) in paragraph at lines 509--510
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 499--500
+Underfull \hbox (badness 10000) in paragraph at lines 511--512
 
  []
 
@@ -777,13 +778,13 @@ Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: 47580EC9E6EA3F9FE875600D6AABA1BB;2012.
  ) 
 Here is how much of TeX's memory you used:
- 16826 strings out of 474222
- 273310 string characters out of 5748733
- 2155975 words of memory out of 5000000
- 38573 multiletter control sequences out of 15000+600000
+ 16833 strings out of 474222
+ 273403 string characters out of 5748732
+ 2163975 words of memory out of 5000000
+ 38572 multiletter control sequences out of 15000+600000
  607592 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 94i,9n,93p,768b,2076s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 94i,9n,93p,990b,2076s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/ty
 pe1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></u
 sr/share/texmf/fonts/type1/public/lm/lmmi12.pfb></usr/share/texmf/fonts/type1/p
@@ -795,10 +796,10 @@ fb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/ty
 pe1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></u
 sr/share/texmf/fonts/type1/public/lm/lmtt12.pfb></usr/share/texmf/fonts/type1/p
 ublic/lm/lmtti10.pfb>
-Output written on report.pdf (14 pages, 364322 bytes).
+Output written on report.pdf (14 pages, 371668 bytes).
 PDF statistics:
- 470 PDF objects out of 1000 (max. 8388607)
- 412 compressed objects within 5 object streams
- 214 named destinations out of 1000 (max. 500000)
+ 481 PDF objects out of 1000 (max. 8388607)
+ 423 compressed objects within 5 object streams
+ 222 named destinations out of 1000 (max. 500000)
  122 words of extra memory for PDF output out of 10000 (max. 10000000)
 

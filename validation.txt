@@ -1,14 +1,3 @@
 ctrl+s
 commnad -> CONDUCT
 write name of the function -> "MyExperiment"()
-
-Hipothesis:
-
-Deviation of service time is always 10%
-The Servers have a initial service time 
-If a transaction needs to enter a server and the server is free, it doesn't enter the queue
-For calculating the AVG wait time in the queue we take into account the transactions that didn0t enter the queue
-inifinity capacity
-No delays
-FIFO
-All blocks have a same difficulty

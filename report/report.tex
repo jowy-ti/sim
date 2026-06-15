@@ -129,7 +129,7 @@
 	\section{Executive Summary}
 	\label{sec:summary}
 	% Provide a brief and concise description of what is going to be analyzed, the problem, and the solution proposed.
-	As blockchain networks experience exponential growth in transaction volumes, efficiency and processing speed have become critical challenges for network viability. This report analyzes the performance bottlenecks within the complete block lifecycle, from the initial mining phase to final verification, using an event-driven task-scheduling simulation engine. Utilizing a fractional factorial Design of Experiments (DoE), we systematically evaluate key operational factors to identify the optimal parameter configuration that maximizes block validation throughput.
+	As blockchain networks experience exponential growth in transaction volumes, efficiency and processing speed have become critical challenges for network viability. This report analyzes the performance bottlenecks within the complete block lifecycle, from the initial mining phase to final verification, using an event scheduling simulation engine. Utilizing a fractional factorial Design of Experiments (DoE), we systematically evaluate key operational factors to identify the optimal parameter configuration that maximizes block validation throughput.
 	
 	% =============================================================================
 	% 2. SYSTEM DESCRIPTION & INTRODUCTION
@@ -138,7 +138,7 @@
 	\label{sec:system_description}
 	% Only contains the description of the system to be modeled (not the problem, not data).
 	
-	The system is a simplification of a blockchain network, instead of transactions we consider that blocks arrive to the network, the nodes mine the blocks, then they broadcast the block mined to peers, finally the block is validated and consolidated in the chain.\\
+	The system is a simplification of a blockchain network, instead of transactions we consider that blocks arrive to the network, the nodes mine the blocks, then they broadcast the block mined to peers, finally the all the block data is validated and consolidated in the chain.\\
 	
 	\noindent The simulated system contains three queues sequentially connected $(Queue1 \to Queue2 \to Queue3)$ each one with an associated task with predefined service time (10, 6, 7) respectively, the amount of servers in each queue are (c, 1, 1) being 'c' a parameter affected by a factor.
 	
@@ -196,22 +196,22 @@
 	The equations of the impact of factors to model parameters are the following:
 	
 	\begin{equation}
-		\text{Task1 service time} = \text{service time} * (\text{Block Difficulty} / 10)
+		\text{Task1 service time} = \text{initial service time} * (\text{Block Difficulty} / 10)
 		\label{eq:service time task1}
 	\end{equation}
 	
 	\begin{equation}
-		\text{Task1 servers} = \text{servers} * \text{Peers}
+		\text{Task1 servers} = \text{initial servers} * \text{Peers}
 		\label{eq:servers task1}
 	\end{equation}
 	
 	\begin{equation}
-		\text{Task2 service time} = \text{service time} * (\text{Peers} / 10)
+		\text{Task2 service time} = \text{initial service time} * (\text{Peers} / 10)
 		\label{eq:service time task2}
 	\end{equation}
 	
 	\begin{equation}
-		\text{Task3 service time} = \text{service time} * (\text{Block Data} / 20)
+		\text{Task3 service time} = \text{initial service time} * (\text{Block Data} / 20)
 		\label{eq:service time task3}
 	\end{equation}
 	
@@ -221,10 +221,10 @@
 	\end{equation}\\
 	
 	\subsubsection*{Problem thought before simulation}
-	\noindent The objective in this simulation is to maximize the throughput of blocks validation, but in this configuration the mining process could be a huge bottleneck if both factors 'Peers' and 'Block Difficulty' are unfavorable. While a higher value of 'Peers' is better for lowering the number of elements in Queue1, it is worse for Queue2, so a problem will be finding a good balance.
+	\noindent The objective in this simulation is to maximize the throughput of blocks validation, but in this configuration the mining process could be a huge bottleneck if both factors 'Peers' and \textit{Block Difficulty} are unfavorable. While a higher value of \textit{Peers} is better for lowering the number of elements in Queue1, it is worse for Queue2, so a problem will be finding a good balance.
 	
 	\subsubsection*{Problem found after simulation}
-	After the execution we found that 'Peers' factor had a significant impact on the block validation throughput, but the positive effect on Queue1 congestion was much important than the negative one to Queue2, so the optimum value of 'Peers' would be above the value in the middle. Also we found that factor 'Block Difficulty' and 'Interarrival Rate' had big impact and they are a problem if their valuea are high, lower is better.
+	After the execution we found that \textit{Peers} factor had a significant impact on the block validation throughput, but the positive effect on Queue1 congestion was much important than the negative one to Queue2, so the optimum value of \textit{Peers} would be above the value in the middle. Also we found that factor \textit{Block Difficulty} and \textit{Interarrival Rate} had big impact and they are a problem if their value are high, lower is better.
 	
 	\subsection{Hypotheses Framework}
 	To complete the system bounds, the structural behavior, parameters, and limitations are framed under the explicit identifiers listed below:
@@ -257,7 +257,7 @@
 	% =============================================================================
 	% 4. MODEL SPECIFICATION
 	% =============================================================================
-	
+	\clearpage
 	\section{Model Specification}
 	\label{sec:model_specification}
 	
@@ -275,7 +275,7 @@
 	% =============================================================================
 	\section{Coding}
 	\label{sec:coding}
-	The implementation is a task scheduling simulation engine written in Python. The simulator operates chronologically using Event Scheduling mechanics rather than fixed steps. The queue topology and factors information is provided by a .yaml where it can defined any kind of topology. A definition example can be found in the appendix \ref{app:topology factors}, in order to define the topology always start with a virtual queue 'Queue0' that introduces to the first real queue .The program has the following five classes:
+	The implementation is a event scheduling simulation engine written in Python. The simulator operates chronologically using event scheduling mechanics rather than fixed steps. The queue topology and factors information is provided by a .yaml where it can defined any kind of topology. A definition example can be found in the appendix \ref{app:topology factors}, in order to define the topology always start with a virtual queue 'Queue0' that introduces to the first real queue .The program has the following five classes:
 	
 	\subsubsection*{Engine}
 	
@@ -293,12 +293,16 @@
 	
 	\begin{lstlisting}[language=Python, caption={Engine constructor}]
 def __init__(self, deadline: float, seed: int, routing_config: Any):
-	self.clock: float = 0
-	self.deadline: float = deadline
-	self.fec: list[Event] = []
-	self.mean_interarrival: float = routing_config['factors']['block_interarrival_rate']
+	self.clock: float = 0 # Current simulation logical time
+	self.deadline: float = deadline # Global simulation ending
+	self.fec: list[Event] = [] # Future Event Calendar (min-heap priority queue)
 	self.rng = RNG(seed)
+	
+	# Extract operational input factor parameters from configuration
+	self.mean_interarrival: float = routing_config['factors']['interarrival_rate']          
 	self.topology: Dict[str, Any] = routing_config['topology']
+	
+	# Initialize the network nodes (KQueue instances) dynamically
 	self.queues: Dict[str, KQueue] = self.queues_creation(routing_config['components'], routing_config['factors'], self.rng)
 	
 	# Statistics
@@ -325,8 +329,8 @@ def __init__(self, name: str, attributes: Any, factors: Any, rng: RNG):
 	self.servers: list[Server] = self.servers_creation(attributes, factors, rng)
 	
 	# Statistics
-	self.wait_times: list[float] = []
-	self.count_history: list[tuple[float, int]] = [] # Tracks (time, current_size)
+	self.wait_times: list[float] = [] # Stores individual queuing delays (W_q)
+	self.count_history: list[tuple[float, int]] = [] # Tracks state trace steps as (timestamp, queue_size)
 	\end{lstlisting}
 	
 	\subsubsection*{Server}
@@ -344,7 +348,11 @@ def __init__(self, name: str, attributes: Any, factors: Any, rng: RNG):
 def __init__(self, id: int, type: int, attributes: Any, factors: Any, rng: RNG):
 	self.id: int = id
 	self.status = ServerState.FREE
+	
+	# Calculate the service time modified by active experimental factors
 	self.service_time: float = self.calculate_servicetime(type, attributes, factors)
+	
+	# Define uniform deviation boundaries (bounds are +/- 10% of the calculated base service time)
 	self.service_deviation: float = self.service_time/10
 	self.rng = rng
 	\end{lstlisting}
@@ -366,9 +374,9 @@ def __init__(self, id: int, type: int, attributes: Any, factors: Any, rng: RNG):
 def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, server_id: int):
 	self.id: int = id
 	self.move_time: float = move_time
-	self.type: EventType = type
+	self.type: EventType = type	# Event classification (e.g., ARRIVAL, DEPARTURE)
 	self.queue_name: str = queue_name
-	self.server_id: int = server_id
+	self.server_id: int = server_id # Identifier of the active server handling the process (-1 if none)
 	\end{lstlisting}
 	
 	\subsubsection*{RNG}
@@ -396,7 +404,7 @@ def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, s
 	\section{Data}
 	\label{sec:data}
 	% Describe the connection mechanism of the data used along the model.
-	It has not been used data for this simulation.
+	It has not been used data for the simulations.
 	
 	% =============================================================================
 	% 7. DEFINITION OF THE EXPERIMENTAL FRAMEWORK
@@ -404,7 +412,7 @@ def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, s
 	\section{Definition of the Experimental Framework}
 	\label{sec:experimental_framework}
 	
-	To optimize experimental efficiency, this study utilizes a $2^{4-1}$ fractional factorial design. This methodology reduces the required experimental overhead by 50\%, requiring only 8 configurations instead of the full 16—while maintaining the statistical power necessary to evaluate main factor effects and two-way interactions. The primary response variable is block validation throughput. To standardize measurements across all experiments and independent replications, each simulation run is bound to a fixed execution window of 10,000 time units. Consequently, the optimization objective is to identify the parameter configurations that maximize the cumulative number of validated blocks within this uniform temporal baseline.\\
+	To optimize experimental efficiency, this study utilizes a $2^{4-1}$ fractional factorial design. This methodology reduces the required experimental overhead by 50\% while maintaining the statistical power necessary to evaluate main factor effects and two-way interactions. The primary response variable is block validation throughput. To standardize measurements across all experiments and independent replications, each simulation run is bound to a fixed execution window of 10,000 time units. Consequently, the optimization objective is to identify the parameter configurations that maximize the cumulative number of validated blocks within this uniform temporal baseline.\\
 	
 	\noindent The parametrization of two levels for each factor is shown in table \ref{tab:factors values}.
 	
@@ -469,7 +477,7 @@ def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, s
 	\end{table}
 	\FloatBarrier
 	
-	\noindent Once  we obtain the results of the fractional factorial DoE, next we analyze the main effects and interactions by performing the yates algorithm, table \ref{tab:effects}.
+	\noindent Next, the Yates algorithm is applied to the fractional factorial design data to calculate and interpret the system's main effects and interactions, table \ref{tab:effects}.
 	
 	\begin{table}[htbp]
 		\centering
@@ -484,7 +492,7 @@ def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, s
 			765.000 & -270.750  & 307.875   & -82.500   & 4 & -20.625   & C \\
 			554.251 & 127.125   & 343.875   & -200.250  & 4 & -50.063  & AC \\
 			898.125 & -210.750  & 397.875   & 36.000    & 4 & 9.000     & BC \\
-			765.000 & -133.125  & 77.625    & -320.250  & 4 & -80.063  & C (ABC) \\
+			765.000 & -133.125  & 77.625    & -320.250  & 4 & -80.063  & D (ABC) \\
 			\bottomrule
 		\end{tabular}
 		\caption{Experimental results and effects.}
@@ -494,11 +502,15 @@ def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, s
 	
 	\subsubsection*{Statistical Interpretation of Experimental Effects}
 	
-	Analysis of the fractional factorial design matrix (Table~\ref{tab:effects}) reveals the individual factor main effects and structural two-way interactions governing the block validation pipeline. \\
+%	\noindent From the results can be seen that factor $B$ (\textit{Peers}) shows the most positive main effect ($+162.938$), demonstrating that expanding peer availability significantly eases processing constraints (inside the interval defined). Conversely, Factor $A$ (\textit{Block Difficulty}) and Factor $D$ (\textit{Block Interarrival Rate}) present severe negative main effects of $-121.875$ and $-80.063$, respectively. High levels in either parameter cause severe queuing delays that negatively affects the throughput. \\
+%	
+%	\noindent The analysis reveals a massive positive interaction element, $AB$ (\textit{Block Difficulty $\times$ Peers} = $+118.875$). This high-magnitude interaction establishes that the throughput degradation caused by elevated cryptographic difficulty is mitigated when the network operates with more peers. In contrast, the minor significance of Factor $C$ ($-20.625$) and interaction $BC$ ($+9.000$) indicates that block data alterations do not represent a primary bottleneck within this specific system.
 	
-	\noindent The grand simulation baseline yields an average throughput of $\bar{X} = 755.906$ validated blocks per execution window. Factor $B$ (\textit{Peers}) exerts the most dominant positive main effect ($+162.938$), empirically demonstrating that expanding peer availability significantly eases processing constraints. Conversely, Factor $A$ (\textit{Block Difficulty}) and Factor $D$ (\textit{Block Interarrival Rate}) present severe negative main effects of $-121.875$ and $-80.063$, respectively. High levels in either parameter cause severe upstream queuing delays that choke cumulative throughput. \\
+	From the results, it can be seen that Factor $B$ (\textit{Peers}) shows the most positive main effect ($+162.938$), demonstrating that expanding peer availability significantly eases processing constraints within the defined experimental interval. Conversely, Factor $A$ (\textit{Block Difficulty}) and Factor $D$ (\textit{Block Interarrival Rate}) present severe negative main effects of $-121.875$ and $-80.063$, respectively. High levels in either parameter trigger severe queuing delays that negatively affect system throughput. \\
 	
-	\noindent Crucially, the analysis reveals a massive positive interaction element, $AB$ (\textit{Block Difficulty $\times$ Peers} = $+118.875$). This high-magnitude interaction establishes that the throughput degradation caused by elevated cryptographic difficulty is heavily cushioned and mitigated when the network operates at a high peer capacity. In contrast, the minor significance of Factor $C$ ($-20.625$) and interaction $BC$ ($+9.000$) indicates that block data alterations do not represent a primary operational bottleneck within this specific architecture.
+	\noindent The analysis reveals a massive positive interaction element of $+118.875$, mathematically attributed to the aliased pair $AB = CD$. Following the sparsity-of-effects principle, this is highly likely to be driven by the $AB$ (\textit{Block Difficulty $\times$ Peers}) interaction, given the magnitude of its corresponding main effects. This establishes that the throughput degradation caused by elevated cryptographic difficulty is substantially mitigated when the network operates with a higher number of peers \\
+	
+	\noindent Additionally, a moderate negative interaction of $-50.063$ is observed for the aliased pair $AC = BD$. In contrast, the minor significance of Factor $C$ ($-20.625$) and the negligible interaction $BC = AD$ ($+9.000$) indicate that block data alterations alone do not represent a primary bottleneck within this specific system architecture.
 	
 	% =============================================================================
 	% 8. MODEL VALIDATION
@@ -519,7 +531,7 @@ def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, s
 		\item \textbf{ttest:} 0.383 p-value
 	\end{itemize}
 	
-	This results tells us that all tests failed to reject the null hypothesis of uniformity, so the RNG seems to provide random numbers correctly. The code is provided in Appendix \ref{app:rng_validation}.
+	\noindent This results tells us that all tests failed to reject the null hypothesis of uniformity, so the RNG seems to provide random numbers correctly. The code is provided in Appendix \ref{app:rng_validation}.
 	
 	\subsubsection*{Model validation}
 	
@@ -550,13 +562,14 @@ def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, s
 		\item \textbf{Queue3 --- avg wait time:} 0.131 p-value
 	\end{itemize}
 	
-	\noindent Since the results of all p-values > 0.05, we fail to reject the hypothesis of similarity. So the simulation engine implemented seems to be adequate for task scheduling. The results can be checked by executing 'python3 main.py' with the same parameters and then 'python3 model\_validation'.
+	\noindent Since the results of all p-values > 0.05, we fail to reject the hypothesis of similarity. So the simulation engine implemented seems to be adequate for event scheduling. The results can be checked by executing \texttt{python3 main.py} with the same parameters and then \texttt{python3 model\_validation}.
 	% =============================================================================
 	% 9. RESULTS & CONCLUSIONS
 	% =============================================================================
 	\section{Results and Conclusions}
 	\label{sec:conclusions}
-	The operational metrics obtained from the simulation runs show clear patterns. High-load job bottlenecks are minimized when prioritizing resource promotion paths. The analytical findings confirm stable system throughput matching within $5\%$ variation of the theoretical validation targets.
+	
+	This project successfully developed a event scheduling, event-driven simulation engine to analyze operational bottlenecks within a simplified blockchain architecture. By leveraging a $2^{4-1}$ fractional factorial Design of Experiments (DoE) and the Yates algorithm, factor main effects and interactions were quantified.The findings demonstrate that \textit{Block Difficulty} (A), \textit{Peers} (B), and \textit{Block Interarrival Rate} (D) are the critical determinants of system performance, while \textit{Block Data} (C) is negligible. To maximize block validation throughput, parameters should be adjusted according to their statistical weight: maximize peer availability ($\uparrow$B), minimize cryptographic difficulty ($\downarrow$A), and reduce traffic congestion ($\downarrow$D). Ultimately, scaling network peer infrastructure ($\uparrow$B) provides the best mitigation against system delays and yields the most noticeable throughput improvement.
 	
 	\newpage
 	% =============================================================================
@@ -569,27 +582,27 @@ def __init__(self, id: int, moveTime: float, type: EventType, queue_name: str, s
 
 	\begin{lstlisting}[language=Python, caption={Loop that manages event life cycle}]
 def run(self):
-	# Initial Arrival
-	nextId = 0
+	# Generation of the first event
+	nextId: int = 0
 	self.generator(nextId, self.calculate_next_arrival(), EventType.ARRIVAL, self.QUEUE0, -1)
 	
 	while self.fec:
-		# Teleport to the next event
-		event: Event = heapq.heappop(self.fec)
-		self.clock = event.moveTime
-		
-		if self.clock > self.deadline: 
-			break
-		
-		if event.type == EventType.ARRIVAL:
-			self.process_arrival(event)
-			next_arrival = self.calculate_next_arrival()
-			self.generator(nextId, next_arrival, EventType.ARRIVAL, self.QUEUE0, -1)
-			
-			nextId += 1
-		
-		elif event.type == EventType.DEPARTURE:
-			self.process_departure(event)
+	# Teleport to the next event
+	event: Event = heapq.heappop(self.fec)
+	self.clock = event.move_time
+	
+	# stops immediatly the simulation if deadline is reached
+	if self.clock > self.deadline: 
+		break
+	
+	if event.type == EventType.ARRIVAL:
+		# routes to the first queue and generates new arrival
+		self.process_arrival(event, nextId)
+		nextId += 1
+	
+	elif event.type == EventType.DEPARTURE:
+		# routes to the next queue and let the next event in the queue enter the server
+		self.process_departure(event)
 	\end{lstlisting}
 	
 	\section{Topology and factors definition}
